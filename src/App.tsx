@@ -1,7 +1,26 @@
 import { useState } from 'react';
-import { Bell, Calendar, Trophy, PartyPopper, MessageCircle, Smile, Plus, Heart, MessageSquare } from 'lucide-react';
+import { Bell, Calendar, Trophy, PartyPopper, MessageCircle, Smile, Plus, Heart, MessageSquare, LogOut } from 'lucide-react';
+import { useAuth } from './AuthContext';
+import { Auth } from './Auth';
 
 function App() {
+  const { user, loading, signOut } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Auth />;
+  }
+
   const [activeTab, setActiveTab] = useState('all');
   const [posts, setPosts] = useState([
     { id: 1, type: 'notice', title: 'Mid-Sem Exams Schedule Released', content: 'Check the portal for your exam dates. Exams start from March 15th.', author: 'Admin', time: '2 hours ago', likes: 45, comments: [] },
@@ -85,13 +104,28 @@ function App() {
                 <p className="text-sm text-gray-600">Stay connected, stay informed</p>
               </div>
             </div>
-            <button
-              onClick={() => setNewPostOpen(!newPostOpen)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-            >
-              <Plus className="w-5 h-5" />
-              New Post
-            </button>
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-sm font-semibold text-gray-900">{user?.fullName || 'Student'}</p>
+                <p className="text-xs text-gray-600">{user?.email}</p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setNewPostOpen(!newPostOpen)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                >
+                  <Plus className="w-5 h-5" />
+                  New Post
+                </button>
+                <button
+                  onClick={signOut}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+                >
+                  <LogOut className="w-5 h-5" />
+                  Sign Out
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </header>
